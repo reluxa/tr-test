@@ -17,7 +17,7 @@ public class Launcher {
     DBStore dbStore = ctx.getBean(DBStore.class);
     dbStore.deleteAll();
     Thread.sleep(5000);
-    for (int i=0;i<1000;i++) {
+    for (int i=0;i<10000;i++) {
       inputSender.send(i);
     }
 

@@ -10,10 +10,12 @@ import org.reluxa.service.SquareQueueMessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 import javax.jms.Queue;
 import javax.sql.DataSource;
@@ -32,18 +34,51 @@ public class JmsConfig {
   @Autowired
   DataSource dataSource;
 
-  private ActiveMQXAConnectionFactory activeMQXAConnectionFactory() {
-    ActiveMQXAConnectionFactory activeMQXAConnectionFactory = new ActiveMQXAConnectionFactory();
-    activeMQXAConnectionFactory.setBrokerURL("tcp://localhost:61616");
-    return activeMQXAConnectionFactory;
+  @Bean(initMethod = "init", destroyMethod = "close")
+  @DependsOn("brokerService")
+  public AtomikosConnectionFactoryBean inputSenderConnectionFactory() {
+    return atomikosConnectionFactoryBean(INPUT_QUEUE + ".sender");
   }
 
-  private AtomikosConnectionFactoryBean connectionFactory(String name) {
+  @Bean(initMethod = "init", destroyMethod = "close")
+  @DependsOn("brokerService")
+  public AtomikosConnectionFactoryBean inputListenerConnectionFactory() {
+    return atomikosConnectionFactoryBean(INPUT_QUEUE + ".listener");
+  }
+
+  @Bean(initMethod = "init", destroyMethod = "close")
+  @DependsOn("brokerService")
+  public AtomikosConnectionFactoryBean squareSenderConnectionFactory() {
+    return atomikosConnectionFactoryBean(SQUARE_QUEUE + ".sender");
+  }
+
+  @Bean(initMethod = "init", destroyMethod = "close")
+  @DependsOn("brokerService")
+  public AtomikosConnectionFactoryBean squareListenerConnectionFactory() {
+    return atomikosConnectionFactoryBean(SQUARE_QUEUE + ".listener");
+  }
+
+  @Bean(initMethod = "init", destroyMethod = "close")
+  @DependsOn("brokerService")
+  public AtomikosConnectionFactoryBean resultSenderConnectionFactory() {
+    return atomikosConnectionFactoryBean(RESULT_QUEUE + ".sender");
+  }
+
+  @Bean(initMethod = "init", destroyMethod = "close")
+  @DependsOn("brokerService")
+  public AtomikosConnectionFactoryBean resultListenerConnectionFactory() {
+    return atomikosConnectionFactoryBean(RESULT_QUEUE + ".listener");
+  }
+
+
+  private AtomikosConnectionFactoryBean atomikosConnectionFactoryBean(String resourceName) {
+    ActiveMQXAConnectionFactory activeMQXAConnectionFactory = new ActiveMQXAConnectionFactory();
+    activeMQXAConnectionFactory.setBrokerURL("tcp://localhost:61616");
     AtomikosConnectionFactoryBean atomikosConnectionFactoryBean = new AtomikosConnectionFactoryBean();
-    atomikosConnectionFactoryBean.setXaConnectionFactory(activeMQXAConnectionFactory());
+    atomikosConnectionFactoryBean.setXaConnectionFactory(activeMQXAConnectionFactory);
     atomikosConnectionFactoryBean.setMinPoolSize(1);
     atomikosConnectionFactoryBean.setMaxPoolSize(15);
-    atomikosConnectionFactoryBean.setUniqueResourceName(name);
+    atomikosConnectionFactoryBean.setUniqueResourceName(resourceName);
     return atomikosConnectionFactoryBean;
   }
 
@@ -54,17 +89,17 @@ public class JmsConfig {
 
   @Bean
   public JmsTemplate inputQueueJmsTemplate() {
-    return jmsTemplate(INPUT_QUEUE);
+    return jmsTemplate(INPUT_QUEUE, inputSenderConnectionFactory());
   }
 
   @Bean
   public JmsTemplate squareQueueJmsTemplate() {
-    return jmsTemplate(SQUARE_QUEUE);
+    return jmsTemplate(SQUARE_QUEUE, squareSenderConnectionFactory());
   }
 
   @Bean
   public JmsTemplate resultQueueJmsTemplate() {
-    return jmsTemplate(RESULT_QUEUE);
+    return jmsTemplate(RESULT_QUEUE, resultSenderConnectionFactory());
   }
 
   @Bean
@@ -83,23 +118,27 @@ public class JmsConfig {
   }
 
   @Bean
+  @DependsOn("jtaTransactionManager")
   public DefaultMessageListenerContainer inputQueueDMLC() throws SystemException {
-    return defaultMessageListenerContainer(INPUT_QUEUE, inputQueueMessageListener());
+    return defaultMessageListenerContainer(INPUT_QUEUE, inputQueueMessageListener(), inputListenerConnectionFactory());
   }
 
   @Bean
+  @DependsOn("jtaTransactionManager")
   public DefaultMessageListenerContainer squareQueueDMLC() throws SystemException {
-    return defaultMessageListenerContainer(SQUARE_QUEUE, squareQueueMessageListener());
+    return defaultMessageListenerContainer(SQUARE_QUEUE, squareQueueMessageListener(), squareListenerConnectionFactory());
   }
 
   @Bean
+  @DependsOn("jtaTransactionManager")
   public DefaultMessageListenerContainer resultQueueDMLC() throws SystemException {
-    return defaultMessageListenerContainer(RESULT_QUEUE, resultQueueMessageListener());
+    return defaultMessageListenerContainer(RESULT_QUEUE, resultQueueMessageListener(), squareListenerConnectionFactory());
   }
 
-  private DefaultMessageListenerContainer defaultMessageListenerContainer(String queueName, MessageListener messageListener) throws SystemException {
+  private DefaultMessageListenerContainer defaultMessageListenerContainer(String queueName, MessageListener messageListener,
+              ConnectionFactory connectionFactory) throws SystemException {
     DefaultMessageListenerContainer listenerContainer = new DefaultMessageListenerContainer();
-    listenerContainer.setConnectionFactory(connectionFactory(queueName+".listener"));
+    listenerContainer.setConnectionFactory(connectionFactory);
     listenerContainer.setTransactionManager(jtaTransactionManager);
     listenerContainer.setDestination(queue(queueName));
     listenerContainer.setSessionTransacted(false);
@@ -110,9 +149,9 @@ public class JmsConfig {
     return listenerContainer;
   }
 
-  private JmsTemplate jmsTemplate(String queueName) {
+  private JmsTemplate jmsTemplate(String queueName, ConnectionFactory connectionFactory) {
     JmsTemplate jmsTemplate = new JmsTemplate();
-    jmsTemplate.setConnectionFactory(connectionFactory(queueName+".sender"));
+    jmsTemplate.setConnectionFactory(connectionFactory);
     jmsTemplate.setDefaultDestination(queue(queueName));
     return jmsTemplate;
   }

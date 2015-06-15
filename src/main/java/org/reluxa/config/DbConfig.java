@@ -13,7 +13,7 @@ import java.util.Properties;
 @Configuration
 public class DbConfig {
 
-  @Bean
+  @Bean(initMethod = "init", destroyMethod = "close")
   public DataSource dataSource() throws SQLException {
     AtomikosDataSourceBean atomikosDataSourceBean = new AtomikosDataSourceBean();
     atomikosDataSourceBean.setXaDataSourceClassName("oracle.jdbc.xa.client.OracleXADataSource");

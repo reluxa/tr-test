@@ -8,11 +8,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ActiveMQConfig {
 
-  @Bean
+  @Bean(initMethod = "start", destroyMethod = "stop")
   public BrokerService brokerService() throws Exception {
     BrokerService broker = new BrokerService();
     broker.addConnector("tcp://localhost:61616");
-    broker.start();
     return broker;
   }
 
