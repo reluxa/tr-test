@@ -18,7 +18,7 @@ public class TxConfig {
   public UserTransactionManager transactionManager() throws SystemException {
     UserTransactionManager userTransactionManager = new UserTransactionManager();
     userTransactionManager.setTransactionTimeout(60);
-    userTransactionManager.setForceShutdown(false);
+    userTransactionManager.setForceShutdown(true);
     return userTransactionManager;
   }
 

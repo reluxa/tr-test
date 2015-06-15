@@ -20,6 +20,8 @@ public class DBStore {
 
   public void deleteAll() {
     jdbcTemplatel.execute("delete from squares2");
+//    jdbcTemplatel.execute("drop table squares2");
+//    jdbcTemplatel.execute("create table squares2 (id integer primary key, square integer)");
     logger.info("All entries were deleted from the database");
   }
 
