@@ -22,12 +22,12 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-tx:4.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-jms:4.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-messaging:4.1.6.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: com.atomikos:transactions-jta:3.9.3" level="project" />
-    <orderEntry type="library" name="Maven: com.atomikos:transactions:3.9.3" level="project" />
-    <orderEntry type="library" name="Maven: com.atomikos:transactions-api:3.9.3" level="project" />
-    <orderEntry type="library" name="Maven: com.atomikos:atomikos-util:3.9.3" level="project" />
-    <orderEntry type="library" name="Maven: com.atomikos:transactions-jms:3.9.3" level="project" />
-    <orderEntry type="library" name="Maven: com.atomikos:transactions-jdbc:3.9.3" level="project" />
+    <orderEntry type="library" name="Maven: com.atomikos:transactions-jta:4.0.0M4" level="project" />
+    <orderEntry type="library" name="Maven: com.atomikos:transactions:4.0.0M4" level="project" />
+    <orderEntry type="library" name="Maven: com.atomikos:transactions-api:4.0.0M4" level="project" />
+    <orderEntry type="library" name="Maven: com.atomikos:atomikos-util:4.0.0M4" level="project" />
+    <orderEntry type="library" name="Maven: com.atomikos:transactions-jms:4.0.0M4" level="project" />
+    <orderEntry type="library" name="Maven: com.atomikos:transactions-jdbc:4.0.0M4" level="project" />
     <orderEntry type="library" name="Maven: javax.transaction:jta:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.oracle:ojdbc6:11.2.0.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.activemq:activemq-all:5.11.1" level="project" />

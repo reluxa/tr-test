@@ -1,5 +1,6 @@
 package org.reluxa.config;
 
+import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import org.springframework.context.annotation.Bean;
@@ -11,10 +12,18 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
+import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
 public class TxConfig {
+
+
+  @Bean(initMethod = "init", destroyMethod = "shutdownWait")
+  public UserTransactionServiceImp userTransactionServiceImp() {
+    UserTransactionServiceImp userTransactionServiceImp = new UserTransactionServiceImp();
+    return userTransactionServiceImp;
+  }
 
   @Bean(initMethod = "init", destroyMethod = "close")
   @DependsOn({
@@ -24,7 +33,8 @@ public class TxConfig {
       "squareSenderConnectionFactory",
       "squareListenerConnectionFactory",
       "resultSenderConnectionFactory",
-      "resultListenerConnectionFactory"
+      "resultListenerConnectionFactory",
+      "userTransactionServiceImp"
   })
   public TransactionManager transactionManager() throws SystemException {
     UserTransactionManager userTransactionManager = new UserTransactionManager();
