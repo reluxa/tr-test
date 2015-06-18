@@ -19,7 +19,7 @@
     <properties>
         <springframework.version>4.1.6.RELEASE</springframework.version>
         <activemq.version>5.11.1</activemq.version>
-        <atomikos.version>4.0.0M4</atomikos.version>
+        <atomikos.version>3.9.3</atomikos.version>
         <oracle.jdbc.version>11.2.0.4.0</oracle.jdbc.version>
     </properties>
 

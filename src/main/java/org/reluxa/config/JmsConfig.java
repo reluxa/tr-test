@@ -144,8 +144,9 @@ public class JmsConfig {
     listenerContainer.setSessionTransacted(false);
     listenerContainer.setReceiveTimeout(10000);
     listenerContainer.setMessageListener(messageListener);
-    listenerContainer.setAutoStartup(true);
+    listenerContainer.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONSUMER);
     listenerContainer.setConcurrency("1-15");
+    listenerContainer.setAutoStartup(true);
     return listenerContainer;
   }
 
